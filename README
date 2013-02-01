@@ -6,9 +6,12 @@ Created by: Jeff Hodnett
 jefers@gmail.com
 http://www.jeffhodnett.com
 
-
 Use this useful utility tool to check what image resources are not being used in your Xcode projects.
 Very useful to reduce your bundle size by showing you what images are not used!
+
+Sasi kiran: 
+* Added storyboard support.
+* Added support to detect images with ~ipad and ~@2xipad.
 
 Stable version on the Mac App Store:
 http://itunes.apple.com/gb/app/unused/id490082248?mt=12

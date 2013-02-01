@@ -18,6 +18,7 @@
 @synthesize window=_window;
 @synthesize mCheckbox=_mCheckbox;
 @synthesize xibCheckbox=_xibCheckbox;
+@synthesize storyboardCheckbox = _storyboardCheckbox;
 @synthesize cppCheckbox=_cppCheckbox;
 @synthesize mmCheckbox=_mmCheckbox;
 @synthesize htmlCheckbox =_htmlCheckbox;
@@ -28,13 +29,15 @@
 @synthesize exportButton=_exportButton;
 @synthesize searchDirectoryPath=_searchDirectoryPath;
 
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
-{
+- (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
+    
     // Setup the results array
     _results = [[NSMutableArray alloc] init];
 
     // Setup the retina images array
     _retinaImagePaths = [[NSMutableArray alloc] init];
+    _iPadImagePaths = [[NSMutableArray alloc] init];
+    _retinaiPadImagePaths = [[NSMutableArray alloc] init];
 
     // Setup the queue
     _queue = [[NSOperationQueue alloc] init];
@@ -50,8 +53,8 @@
     [_searchButton setKeyEquivalent:@"\r"];
 }
 
--(void)dealloc
-{
+- (void)dealloc {
+    
     [_searchDirectoryPath release];
     [_pngFiles release];
     [_results release];
@@ -62,8 +65,8 @@
 }
 
 #pragma mark - Actions
--(IBAction)browseButtonSelected:(id)sender
-{
+- (IBAction)browseButtonSelected:(id)sender {
+    
     // Show an open panel
     NSOpenPanel *openPanel = [NSOpenPanel openPanel];
 
@@ -80,8 +83,8 @@
     }
 }
 
--(IBAction)exportButtonSelected:(id)sender
-{
+- (IBAction)exportButtonSelected:(id)sender {
+    
     NSSavePanel *save = [NSSavePanel savePanel];
     [save setAllowedFileTypes:[NSArray arrayWithObject:@"txt"]];
     NSInteger result = [save runModal];
@@ -103,10 +106,10 @@
     }
 }
 
--(IBAction)startSearch:(id)sender
-{
+-(IBAction)startSearch:(id)sender {
+    
     // Check for a path
-    if(!self.searchDirectoryPath) {
+    if (!self.searchDirectoryPath) {
         // Show an alert
         NSAlert *alert = [[[NSAlert alloc] init] autorelease];
         [alert setMessageText:@"Project Path Error"];
@@ -117,7 +120,7 @@
     }
 
     // Check the path
-    if(![[NSFileManager defaultManager] fileExistsAtPath:self.searchDirectoryPath]) {
+    if (![[NSFileManager defaultManager] fileExistsAtPath:self.searchDirectoryPath]) {
         NSAlert *alert = [[[NSAlert alloc] init] autorelease];
         [alert setMessageText:@"Project Path Error"];
         [alert setInformativeText:@"Path is not valid!! Please select a valid project folder!"];
@@ -133,6 +136,8 @@
     // Reset
     [_results removeAllObjects];
     [_retinaImagePaths removeAllObjects];
+    [_iPadImagePaths removeAllObjects];
+    [_retinaiPadImagePaths removeAllObjects];
     [_resultsTableView reloadData];
 
     // Start the search
@@ -143,8 +148,8 @@
     isSearching = YES;
 }
 
--(void)runImageSearch
-{
+- (void)runImageSearch {
+    
     // Start the ui
     [self setUIEnabled:NO];
 
@@ -154,13 +159,13 @@
 
     NSArray *pngFiles = _pngFiles;
 
-    if (SHOULD_FILTER_ENUM_VARIANTS)
-    {
+    if (SHOULD_FILTER_ENUM_VARIANTS) {
+        
         NSMutableArray *mutablePngFiles = [NSMutableArray arrayWithArray:pngFiles];
 
         // Trying to filter image names like: "Section_0.png", "Section_1.png", etc (these names can possibly be created by [NSString stringWithFormat:@"Section_%d", (int)] constructions) to just "Section_" item
-        for (NSInteger index = 0, count = [mutablePngFiles count]; index < count; index++)
-        {
+        for (NSInteger index = 0, count = [mutablePngFiles count]; index < count; index++) {
+            
             NSString *imageName = [mutablePngFiles objectAtIndex:index];
             NSRegularExpression *regExp = [NSRegularExpression regularExpressionWithPattern:@"[_-].*\\d.*.png" options:NSRegularExpressionCaseInsensitive error:nil];
             NSString *newImageName = [regExp stringByReplacingMatchesInString:imageName options:NSMatchingReportProgress range:NSMakeRange(0, [imageName length]) withTemplate:@""];
@@ -182,41 +187,57 @@
             // Add to retina image paths
             [_retinaImagePaths addObject:pngPath];
         }
+        
+        NSRange iPadRange = [imageName rangeOfString:@"~ipad"];
+        if (iPadRange.location != NSNotFound) {
+            
+            [_iPadImagePaths addObject:pngPath];
+        }
+        
+        NSRange retinaiPadRange = [imageName rangeOfString:@"@2x~ipad"];
+        if (retinaiPadRange.location != NSNotFound) {
+            
+            [_retinaiPadImagePaths addObject:pngPath];
+        }
     }
 
     // Now loop and check
     for (NSString *pngPath in pngFiles) {
 
         // Check that the png path is not empty
-        if(![pngPath isEqualToString:@""]) {
+        if (![pngPath isEqualToString:@""]) {
             // Grab the file name
             NSString *imageName = [pngPath lastPathComponent];
 
             // Check that it's not a @2x or reserved image name
-            if([self isValidImageAtPath:pngPath]) {
+            if ([self isValidImageAtPath:pngPath]) {
 
                 // Run the checks
-                if([_mCheckbox state] && [self occurancesOfImageNamed:imageName atDirectory:_searchDirectoryPath inFileExtensionType:@"m"]) {
+                if ([_mCheckbox state] && [self occurancesOfImageNamed:imageName atDirectory:_searchDirectoryPath inFileExtensionType:@"m"]) {
                     continue;
                 }
 
-                if([_xibCheckbox state] && [self occurancesOfImageNamed:imageName atDirectory:_searchDirectoryPath inFileExtensionType:@"xib"]) {
+                if ([_xibCheckbox state] && [self occurancesOfImageNamed:imageName atDirectory:_searchDirectoryPath inFileExtensionType:@"xib"]) {
+                    continue;
+                }
+                
+                if ([_storyboardCheckbox state] && [self occurancesOfImageNamed:imageName atDirectory:_searchDirectoryPath inFileExtensionType:@"storyboard"]) {
                     continue;
                 }
 
-                if([_cppCheckbox state] && [self occurancesOfImageNamed:imageName atDirectory:_searchDirectoryPath inFileExtensionType:@"cpp"]) {
+                if ([_cppCheckbox state] && [self occurancesOfImageNamed:imageName atDirectory:_searchDirectoryPath inFileExtensionType:@"cpp"]) {
                     continue;
                 }
 
-                if([_mmCheckbox state] && [self occurancesOfImageNamed:imageName atDirectory:_searchDirectoryPath inFileExtensionType:@"mm"]) {
+                if ([_mmCheckbox state] && [self occurancesOfImageNamed:imageName atDirectory:_searchDirectoryPath inFileExtensionType:@"mm"]) {
                     continue;
                 }
 
-                if([_htmlCheckbox state] && [self occurancesOfImageNamed:imageName atDirectory:_searchDirectoryPath inFileExtensionType:@"html"]) {
+                if ([_htmlCheckbox state] && [self occurancesOfImageNamed:imageName atDirectory:_searchDirectoryPath inFileExtensionType:@"html"]) {
                     continue;
                 }
 
-                if([_plistCheckbox state] && [self occurancesOfImageNamed:imageName atDirectory:_searchDirectoryPath inFileExtensionType:@"plist"]) {
+                if ([_plistCheckbox state] && [self occurancesOfImageNamed:imageName atDirectory:_searchDirectoryPath inFileExtensionType:@"plist"]) {
                     continue;
                 }
 
@@ -224,7 +245,6 @@
                 // Update results
                 [self addNewResult:pngPath];
             }
-
         }
     }
 
@@ -246,9 +266,9 @@
     isSearching = NO;
 }
 
--(void)setUIEnabled:(BOOL)state
-{
-    if(state) {
+- (void)setUIEnabled:(BOOL)state {
+    
+    if (state) {
         [_searchButton setTitle:@"Search"];
         [_searchButton setKeyEquivalent:@"\r"];
         [_searchButton setEnabled:YES];
@@ -256,6 +276,7 @@
         [_processIndicator stopAnimation:self];
         [_mCheckbox setEnabled:YES];
         [_xibCheckbox setEnabled:YES];
+        [_storyboardCheckbox setEnabled:YES];
         [_cppCheckbox setEnabled:YES];
         [_mmCheckbox setEnabled:YES];
         [_htmlCheckbox setEnabled:YES];
@@ -270,6 +291,7 @@
         [_statusLabel setStringValue:@"Searching..."];
         [_mCheckbox setEnabled:NO];
         [_xibCheckbox setEnabled:NO];
+        [_storyboardCheckbox setEnabled:NO];
         [_cppCheckbox setEnabled:NO];
         [_mmCheckbox setEnabled:NO];
         [_htmlCheckbox setEnabled:NO];
@@ -280,8 +302,8 @@
     }
 }
 
--(NSArray *)pngFilesAtDirectory:(NSString *)directoryPath
-{
+- (NSArray *)pngFilesAtDirectory:(NSString *)directoryPath {
+    
     // Create a find task
     NSTask *task = [[[NSTask alloc] init] autorelease];
     [task setLaunchPath: @"/usr/bin/find"];
@@ -311,13 +333,18 @@
     return lines;
 }
 
--(BOOL)isValidImageAtPath:(NSString *)imagePath
-{
+- (BOOL)isValidImageAtPath:(NSString *)imagePath {
+    
     NSString *imageName = [imagePath lastPathComponent];
 
     // Does the image have a @2x
     NSRange retinaRange = [imageName rangeOfString:@"@2x"];
     if(retinaRange.location != NSNotFound) {
+        return NO;
+    }
+    
+    NSRange iPadImage = [imageName rangeOfString:@"~ipad"];
+    if (iPadImage.location != NSNotFound) {
         return NO;
     }
 
@@ -339,8 +366,8 @@
     return YES;
 }
 
--(int)occurancesOfImageNamed:(NSString *)imageName atDirectory:(NSString *)directoryPath inFileExtensionType:(NSString *)extension
-{
+- (int)occurancesOfImageNamed:(NSString *)imageName atDirectory:(NSString *)directoryPath inFileExtensionType:(NSString *)extension {
+    
     NSTask *task;
     task = [[[NSTask alloc] init] autorelease];
     [task setLaunchPath: @"/bin/sh"];
@@ -377,29 +404,59 @@
     return count;
 }
 
--(void)addNewResult:(NSString *)pngPath
-{
+- (void)addNewResult:(NSString *)pngPath {
+    
     if ([_pngFiles indexOfObject:pngPath] == NSNotFound)
         return;
 
     // Add and reload
     [_results addObject:pngPath];
 
+    NSString *imageName = [pngPath lastPathComponent];
+    
     // Check for an @2x image too!
     for (NSString *retinaPath in _retinaImagePaths) {
 
         // Compare the image name and the retina image name
-        NSString *imageName = [pngPath lastPathComponent];
+        
         imageName = [imageName stringByDeletingPathExtension];
         NSString *retinaImageName = [retinaPath lastPathComponent];
         retinaImageName = [retinaImageName stringByDeletingPathExtension];
         retinaImageName = [retinaImageName stringByReplacingOccurrencesOfString:@"@2x" withString:@""];
 
         // Check
-        if([imageName isEqualToString:retinaImageName]) {
+        if ([imageName isEqualToString:retinaImageName]) {
             // Add it
             [_results addObject:retinaPath];
 
+            break;
+        }
+    }
+    
+    // Check for ~ipad image too
+    
+    for (NSString *iPadPath in _iPadImagePaths) {
+        
+        NSString *iPadImageName = [iPadPath lastPathComponent];
+        iPadImageName = [iPadImageName stringByDeletingPathExtension];
+        iPadImageName = [iPadImageName stringByReplacingOccurrencesOfString:@"~ipad" withString:@""];
+        
+        if ([imageName isEqualToString:iPadImageName]) {
+            
+            [_results addObject:imageName];
+            break;
+        }
+    }
+    
+    for (NSString *iPadPath in _retinaiPadImagePaths) {
+        
+        NSString *iPadImageName = [iPadPath lastPathComponent];
+        iPadImageName = [iPadImageName stringByDeletingPathExtension];
+        iPadImageName = [iPadImageName stringByReplacingOccurrencesOfString:@"@2x~ipad" withString:@""];
+        
+        if ([imageName isEqualToString:iPadImageName]) {
+            
+            [_results addObject:imageName];
             break;
         }
     }
@@ -414,17 +471,17 @@
 }
 
 #pragma mark - NSTableView Delegate
-- (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView
-{
+- (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
+    
     return [_results count];
 }
 
--(id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)rowIndex
-{
+- (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)rowIndex {
+    
     NSString *pngPath = [_results objectAtIndex:rowIndex];
 
-    if ([[tableColumn identifier] isEqualToString:@"shortName"])
-    {
+    if ([[tableColumn identifier] isEqualToString:@"shortName"]) {
+        
         NSString *imageName = [pngPath lastPathComponent];
         return imageName;
     }
@@ -432,29 +489,35 @@
     return pngPath;
 }
 
--(void)tableViewDoubleClicked
-{
+- (void)tableViewDoubleClicked {
+    
     // Open finder
     NSString *path = [_results objectAtIndex:[_resultsTableView clickedRow]];
     [[NSWorkspace sharedWorkspace] selectFile:path inFileViewerRootedAtPath:nil];
 }
 
-- (NSString *)stringFromFileSize:(int)theSize
-{
+- (NSString *)stringFromFileSize:(int)theSize {
+    
 	float floatSize = theSize;
-	if (theSize<1023)
+    
+	if (theSize < 1023)
 		return([NSString stringWithFormat:@"%i bytes",theSize]);
+    
 	floatSize = floatSize / 1024;
-	if (floatSize<1023)
+    
+	if (floatSize < 1023)
 		return([NSString stringWithFormat:@"%1.1f KB",floatSize]);
+    
 	floatSize = floatSize / 1024;
-	if (floatSize<1023)
+    
+	if (floatSize < 1023)
 		return([NSString stringWithFormat:@"%1.1f MB",floatSize]);
+    
 	floatSize = floatSize / 1024;
 
 	// Add as many as you like
 
-	return([NSString stringWithFormat:@"%1.1f GB",floatSize]);
+	return ([NSString stringWithFormat:@"%1.1f GB",floatSize]);
 }
 
 @end
