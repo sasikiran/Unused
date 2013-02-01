@@ -347,6 +347,11 @@
     if (iPadImage.location != NSNotFound) {
         return NO;
     }
+    
+    NSRange iPhoneImage = [imageName rangeOfString:@"~iphone"];
+    if (iPhoneImage.location != NSNotFound) {
+        return NO;
+    }
 
     // Is the name a part of 3rd party bundle
     if([imagePath rangeOfString:@".bundle"].length > 0) {
