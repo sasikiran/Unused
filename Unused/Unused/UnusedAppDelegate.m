@@ -183,7 +183,7 @@
 
         // Does the image have a @2x
         NSRange retinaRange = [imageName rangeOfString:@"@2x"];
-        if(retinaRange.location != NSNotFound) {
+        if (retinaRange.location != NSNotFound) {
             // Add to retina image paths
             [_retinaImagePaths addObject:pngPath];
         }
