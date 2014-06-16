@@ -11,6 +11,7 @@
 #define SHOULD_FILTER_ENUM_VARIANTS YES
 
 @implementation UnusedAppDelegate
+@synthesize DeleteAllUnUsed = _DeleteAllUnUsed;
 
 @synthesize resultsTableView=_resultsTableView;
 @synthesize processIndicator=_processIndicator;
@@ -284,6 +285,8 @@
         [_browseButton setEnabled:YES];
         [_pathTextField setEnabled:YES];
         [_exportButton setHidden:NO];
+        [_DeleteAllUnUsed setHidden:NO];
+
     }
     else {
         [_processIndicator setHidden:NO];
@@ -525,4 +528,30 @@
 	return ([NSString stringWithFormat:@"%1.1f GB",floatSize]);
 }
 
+- (IBAction)DeleteAllUnUsed:(id)sender {
+    for (NSString*path in _results) {
+        [self deleteFileWithPath:path];
+    }
+
+}
+-(void)deleteFileWithPath:(NSString*)path{
+    NSTask *task;
+    task = [[[NSTask alloc] init] autorelease];
+    [task setLaunchPath: @"/bin/sh"];
+    
+    // Setup the call
+    NSString *cmd = [NSString stringWithFormat:@"rm %@",path];
+    NSArray *argvals = [NSArray arrayWithObjects: @"-c", cmd, nil];
+    [task setArguments: argvals];
+    
+    NSPipe *pipe;
+    pipe = [NSPipe pipe];
+    [task setStandardOutput: pipe];
+    
+    NSFileHandle *file;
+    file = [pipe fileHandleForReading];
+    
+    [task launch];
+
+}
 @end
