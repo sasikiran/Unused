@@ -20,6 +20,7 @@
 
     NSOperationQueue *_queue;
     BOOL isSearching;
+    NSButton *_DeleteAllUnUsed;
 }
 
 // Outlets
@@ -46,6 +47,8 @@
 - (IBAction)browseButtonSelected:(id)sender;
 - (IBAction)startSearch:(id)sender;
 - (IBAction)exportButtonSelected:(id)sender;
+@property (assign) IBOutlet NSButton *DeleteAllUnUsed;
+- (IBAction)DeleteAllUnUsed:(id)sender;
 
 // Methods
 - (NSArray *)pngFilesAtDirectory:(NSString *)directoryPath;
