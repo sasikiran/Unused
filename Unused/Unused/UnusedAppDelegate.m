@@ -11,6 +11,7 @@
 #define SHOULD_FILTER_ENUM_VARIANTS YES
 
 @implementation UnusedAppDelegate
+@synthesize DeleteSelected = _DeleteSelected;
 @synthesize DeleteAllUnUsed = _DeleteAllUnUsed;
 
 @synthesize resultsTableView=_resultsTableView;
@@ -52,6 +53,10 @@
     // Setup search button
     [_searchButton setBezelStyle:NSRoundedBezelStyle];
     [_searchButton setKeyEquivalent:@"\r"];
+    [_resultsTableView setAllowsMultipleSelection: YES];
+    
+
+    
 }
 
 - (void)dealloc {
@@ -286,6 +291,9 @@
         [_pathTextField setEnabled:YES];
         [_exportButton setHidden:NO];
         [_DeleteAllUnUsed setHidden:NO];
+        [_DeleteSelected setHidden:NO];
+
+        
 
     }
     else {
@@ -412,6 +420,17 @@
     return count;
 }
 
+- (IBAction)DeleteSelected:(id)sender {
+   NSIndexSet*selectedIndexSet= [_resultsTableView selectedRowIndexes];
+    for (int count=0; count<[selectedIndexSet count]; count++) {
+     NSUInteger index=   [selectedIndexSet indexGreaterThanOrEqualToIndex:count];
+      NSString *path=      [_results objectAtIndex:index];
+              [_results removeObjectAtIndex:index];
+        [_resultsTableView reloadData];
+        [self deleteFileWithPath:path];
+    }
+}
+
 - (void)addNewResult:(NSString *)pngPath {
     
     if ([_pngFiles indexOfObject:pngPath] == NSNotFound)
@@ -493,10 +512,27 @@
         NSString *imageName = [pngPath lastPathComponent];
         return imageName;
     }
+    if ([[tableColumn identifier] isEqualToString:@"Check"]) {
+        
+        
+        NSButtonCell *imageCell = [[NSButtonCell alloc] initTextCell:@"test"];
+        [imageCell setButtonType:NSSwitchButton];
+
+        return imageCell;
+    }
 
     return pngPath;
 }
+#pragma mark - Table View Delegate
 
+- (void)tableViewSelectionDidChange:(NSNotification *)notification {
+    
+    NSTableView *tableView = notification.object;
+    NSLog(@"User has selected row %ld", (long)tableView.selectedRow);
+}
+- (NSIndexSet *)selectedRowIndexes{
+    
+}
 - (void)tableViewDoubleClicked {
     
     // Open finder
