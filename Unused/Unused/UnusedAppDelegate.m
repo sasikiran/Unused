@@ -310,6 +310,8 @@
         [_browseButton setEnabled:NO];
         [_pathTextField setEnabled:NO];
         [_exportButton setHidden:YES];
+        [_DeleteAllUnUsed setHidden:YES];
+        [_DeleteSelected setHidden:YES];
     }
 }
 
@@ -530,9 +532,7 @@
     NSTableView *tableView = notification.object;
     NSLog(@"User has selected row %ld", (long)tableView.selectedRow);
 }
-- (NSIndexSet *)selectedRowIndexes{
-    
-}
+
 - (void)tableViewDoubleClicked {
     
     // Open finder
