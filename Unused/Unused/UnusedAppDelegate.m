@@ -518,14 +518,12 @@
         NSString *imageName = [pngPath lastPathComponent];
         return imageName;
     }
-    if ([[tableColumn identifier] isEqualToString:@"Check"]) {
-        
-        
-        NSButtonCell *imageCell = [[NSButtonCell alloc] initTextCell:@"test"];
-        [imageCell setButtonType:NSSwitchButton];
-
-        return imageCell;
-    }
+//    if ([[tableColumn identifier] isEqualToString:@"viewImage"]) {
+//        
+//       NSImage*img= [[NSImage alloc ]initWithContentsOfFile:pngPath];
+//        NSImageCell *imageCell = [[NSImageCell alloc] initImageCell:img];
+//        return imageCell;
+//    }
 
     return pngPath;
 }
