@@ -658,7 +658,7 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <scrollView autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" id="533">
-                        <rect key="frame" x="20" y="46" width="460" height="257"/>
+                        <rect key="frame" x="20" y="45.999999999999979" width="460" height="257"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
                         <clipView key="contentView" id="nTh-MS-Lcf">
                             <rect key="frame" x="1" y="17" width="458" height="239"/>
@@ -812,8 +812,8 @@
                         </textFieldCell>
                     </textField>
                     <textField verticalHuggingPriority="750" id="563">
-                        <rect key="frame" x="137" y="14" width="282" height="17"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <rect key="frame" x="137" y="14" width="114" height="17"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" id="564">
                             <font key="font" metaFont="system"/>
                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>

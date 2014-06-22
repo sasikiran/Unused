@@ -428,9 +428,13 @@
      NSUInteger index=   [selectedIndexSet indexGreaterThanOrEqualToIndex:count];
       NSString *path=      [_results objectAtIndex:index];
               [_results removeObjectAtIndex:index];
+        
         [_resultsTableView reloadData];
         [self deleteFileWithPath:path];
+        [_resultsTableView deselectRow:index];
+
     }
+
 }
 
 - (void)addNewResult:(NSString *)pngPath {
