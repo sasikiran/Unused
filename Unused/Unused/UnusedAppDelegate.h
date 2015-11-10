@@ -21,6 +21,7 @@
     NSOperationQueue *_queue;
     BOOL isSearching;
     NSButton *_DeleteAllUnUsed;
+    NSButton *_DeleteSelected;
 }
 
 // Outlets
@@ -54,6 +55,8 @@
 - (NSArray *)pngFilesAtDirectory:(NSString *)directoryPath;
 - (BOOL)isValidImageAtPath:(NSString *)imagePath;
 - (int)occurancesOfImageNamed:(NSString *)imageName atDirectory:(NSString *)directoryPath inFileExtensionType:(NSString *)extension;
+@property (assign) IBOutlet NSButton *DeleteSelected;
+- (IBAction)DeleteSelected:(id)sender;
 
 - (void)addNewResult:(NSString *)pngPath;
 

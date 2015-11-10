@@ -658,7 +658,7 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <scrollView autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" id="533">
-                        <rect key="frame" x="20" y="46.000000000000021" width="460" height="257"/>
+                        <rect key="frame" x="20" y="45.999999999999979" width="460" height="257"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
                         <clipView key="contentView" id="nTh-MS-Lcf">
                             <rect key="frame" x="1" y="17" width="458" height="239"/>
@@ -710,7 +710,7 @@
                             <rect key="frame" x="1" y="119" width="223" height="15"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
-                        <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="37" horizontal="NO" id="534">
+                        <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="534">
                             <rect key="frame" x="224" y="17" width="15" height="102"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
@@ -812,8 +812,8 @@
                         </textFieldCell>
                     </textField>
                     <textField verticalHuggingPriority="750" id="563">
-                        <rect key="frame" x="137" y="14" width="282" height="17"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <rect key="frame" x="137" y="14" width="114" height="17"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" id="564">
                             <font key="font" metaFont="system"/>
                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -899,12 +899,24 @@
                             <action selector="DeleteAllUnUsed:" target="494" id="zGk-C6-jO8"/>
                         </connections>
                     </button>
+                    <button hidden="YES" verticalHuggingPriority="750" id="C70-GJ-TnR">
+                        <rect key="frame" x="250" y="4" width="89" height="32"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                        <buttonCell key="cell" type="push" title="Delete Selected" bezelStyle="rounded" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="sJB-Qr-nSA">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="DeleteSelected:" target="494" id="YKl-gI-OOY"/>
+                        </connections>
+                    </button>
                 </subviews>
             </view>
         </window>
         <customObject id="494" customClass="UnusedAppDelegate">
             <connections>
                 <outlet property="DeleteAllUnUsed" destination="ljB-k9-9py" id="5Pw-HN-Feh"/>
+                <outlet property="DeleteSelected" destination="C70-GJ-TnR" id="oD6-FU-eyT"/>
                 <outlet property="browseButton" destination="575" id="588"/>
                 <outlet property="cppCheckbox" destination="548" id="570"/>
                 <outlet property="exportButton" destination="585" id="591"/>

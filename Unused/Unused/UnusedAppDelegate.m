@@ -11,6 +11,7 @@
 #define SHOULD_FILTER_ENUM_VARIANTS YES
 
 @implementation UnusedAppDelegate
+@synthesize DeleteSelected = _DeleteSelected;
 @synthesize DeleteAllUnUsed = _DeleteAllUnUsed;
 
 @synthesize resultsTableView=_resultsTableView;
@@ -52,6 +53,10 @@
     // Setup search button
     [_searchButton setBezelStyle:NSRoundedBezelStyle];
     [_searchButton setKeyEquivalent:@"\r"];
+    [_resultsTableView setAllowsMultipleSelection: YES];
+    
+
+    
 }
 
 - (void)dealloc {
@@ -286,6 +291,9 @@
         [_pathTextField setEnabled:YES];
         [_exportButton setHidden:NO];
         [_DeleteAllUnUsed setHidden:NO];
+        [_DeleteSelected setHidden:NO];
+
+        
 
     }
     else {
@@ -302,6 +310,8 @@
         [_browseButton setEnabled:NO];
         [_pathTextField setEnabled:NO];
         [_exportButton setHidden:YES];
+        [_DeleteAllUnUsed setHidden:YES];
+        [_DeleteSelected setHidden:YES];
     }
 }
 
@@ -412,6 +422,21 @@
     return count;
 }
 
+- (IBAction)DeleteSelected:(id)sender {
+   NSIndexSet*selectedIndexSet= [_resultsTableView selectedRowIndexes];
+    for (int count=0; count<[selectedIndexSet count]; count++) {
+     NSUInteger index=   [selectedIndexSet indexGreaterThanOrEqualToIndex:count];
+      NSString *path=      [_results objectAtIndex:index];
+              [_results removeObjectAtIndex:index];
+        
+        [_resultsTableView reloadData];
+        [self deleteFileWithPath:path];
+        [_resultsTableView deselectRow:index];
+
+    }
+
+}
+
 - (void)addNewResult:(NSString *)pngPath {
     
     if ([_pngFiles indexOfObject:pngPath] == NSNotFound)
@@ -493,8 +518,21 @@
         NSString *imageName = [pngPath lastPathComponent];
         return imageName;
     }
+//    if ([[tableColumn identifier] isEqualToString:@"viewImage"]) {
+//        
+//       NSImage*img= [[NSImage alloc ]initWithContentsOfFile:pngPath];
+//        NSImageCell *imageCell = [[NSImageCell alloc] initImageCell:img];
+//        return imageCell;
+//    }
 
     return pngPath;
+}
+#pragma mark - Table View Delegate
+
+- (void)tableViewSelectionDidChange:(NSNotification *)notification {
+    
+    NSTableView *tableView = notification.object;
+    NSLog(@"User has selected row %ld", (long)tableView.selectedRow);
 }
 
 - (void)tableViewDoubleClicked {
